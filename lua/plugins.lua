@@ -23,8 +23,14 @@ require('lazy').setup({
         }
     },
     {
-        'codota/tabnine-nvim', build = "./dl_binaries.sh", config = function() require('tabnine').setup({}) end
+        'nvim-telescope/telescope.nvim',
+        tag = '0.1.1',
+        -- or , branch = '0.1.1',
+        dependencies = { 'nvim-lua/plenary.nvim' }
     },
+    -- {
+    --     'codota/tabnine-nvim', build = "./dl_binaries.sh", config = function() require('tabnine').setup({}) end
+    -- },
     {
         'windwp/nvim-autopairs', config = function() require("nvim-autopairs").setup({}) end
     },
@@ -82,6 +88,7 @@ require('lazy').setup({
         dependencies = { "nvim-tree/nvim-web-devicons", },
         opts = {}
     },
+    { 'vimwiki/vimwiki' },
     {
         'Mofiqul/vscode.nvim',
         config = function()
@@ -91,15 +98,48 @@ require('lazy').setup({
             vim.api.nvim_set_hl(0, 'LineNr', { fg = '#FFFFFF' })
             vim.api.nvim_set_hl(0, 'LineNrBelow', { fg = '#808080' })
         end
-    },
+    }, {
+    "jay-babu/mason-nvim-dap.nvim",
+    requires = { 'mfussenegger/nvim-dap', 'williamboman/mason.nvim', },
+    config = function()
+        require("mason-nvim-dap").setup({
+            ensure_installed = { "javadbg", "javatest" },
+            handlers = {
+                function(config)
+                    -- all sources with no handler get passed here
+                    -- Keep original functionality
+                    require('mason-nvim-dap').default_setup(config)
+                end,
+                javadbg = function(config)
+                    config.adapters = {
+                            -- You need to extend the classPath to list your dependencies.
+                            -- `nvim-jdtls` would automatically add the `classPaths` property if it is missing
+                            classPaths = {},
+                            -- If using multi-module projects, remove otherwise.
+                            -- projectName = "yourProjectName",
+                            javaExec = "/bin/java",
+                            mainClass = "${file}",
+
+                            -- If using the JDK9+ module system, this needs to be extended
+                            -- `nvim-jdtls` would automatically populate this property
+                            modulePaths = {},
+                            name = "Launch YourClassName",
+                            request = "launch",
+                            type = "java"
+                        },
+                        require('mason-nvim-dap').default_setup(config) -- don't forget this!
+                end,
+            }
+        })
+    end
+},
 
     { 'lewis6991/gitsigns.nvim', opts = {} },
-    { 'j-hui/fidget.nvim',       opts = {} },
     {
+        'mfussenegger/nvim-dap',
         "lukas-reineke/indent-blankline.nvim",
         "akinsho/toggleterm.nvim",
         'numToStr/Comment.nvim',
         'tpope/vim-fugitive',
-        'mfussenegger/nvim-dap',
     },
 })
