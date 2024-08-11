@@ -1,0 +1,71 @@
+- name: Config Neovim with plugins
+  hosts: localhost
+  gather_facts: yes
+  become: no
+  vars:
+    nvim_dir: "{{ ansible_env.HOME }}/.local/share/nvim"
+    nvim_config_dir: "{{ ansible_env.HOME }}/.config/nvim"
+    nvim_config_file: "{{ nvim_config_dir }}/init.lua"
+    nvim_plugin_dir: "{{ nvim_dir }}/site/pack/plugins/start"
+
+  tasks:
+    - name: Install required packages from brew
+      homebrew:
+        name:
+          - neovim
+          - npm
+          - lua-language-server
+          - stylua
+          - pyright
+          - ruff
+          - typescript-language-server
+          - tailwindcss-language-server
+          - vscode-langservers-extracted # html, css, eslint and json language servers
+          - prettier
+          - elixir-ls
+          - rust-analyzer
+          - gopls
+          - bash-language-server
+          - sql-language-server
+          - dockerfile-language-server
+          - yaml-language-server
+          - ansible-language-server
+          - ansible-lint
+          - marksman
+          # - texlab
+          # - ltex-ls
+          # - zk
+        state: present
+
+    - name: Install graphql-language-service-cli with npm
+      command: npm install -g graphql-language-service-cli
+
+    - name: Copy Neovim config file
+      copy:
+        src: init.lua
+        dest: "{{ nvim_config_file }}"
+        mode: 0640
+
+    - name: Install neovim plugins
+      git:
+        repo: "https://github.com/{{ item }}"
+        dest: "{{ nvim_plugin_dir }}/{{ item | basename }}"
+        clone: yes
+        # update: yes
+        # recursive: no
+        # force: yes
+      loop:
+        - savq/paq-nvim
+        # - neovim/nvim-lspconfig
+        # - nvim-treesitter/nvim-treesitter
+        # - junegunn/fzf.vim
+        # - tpope/vim-fugitive
+        # - lewis6991/gitsigns.nvim
+        # - windwp/nvim-autopairs
+        # - windwp/nvim-ts-autotag
+        # - JoosepAlviste/nvim-ts-context-commentstring
+        # - themaxmarchuk/tailwindcss-colors.nvim
+        # - j-hui/fidget.nvim
+        # - stevearc/conform.nvim
+        # - nvim-tree/nvim-tree.lua
+        # - nvim-tree/nvim-web-devicons
