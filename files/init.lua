@@ -88,6 +88,7 @@ vim.keymap.set("v", "<leader>y", '"+y', { noremap = true })
 vim.keymap.set("n", "<leader>d", '"_d', { noremap = true })
 vim.keymap.set("n", "<leader>ff", "<cmd>Files<CR>")
 vim.keymap.set("n", "<leader>fg", "<cmd>Rg<CR>")
+vim.keymap.set("n", "<leader>gf", "<cmd>GF?<CR>")
 vim.keymap.set("i", "<c-x><c-f>", "fzf#vim#complete#path('rg --files')", { expr = true, noremap = true, silent = true })
 vim.keymap.set("n", "<leader><leader>", "<cmd>Buffers<CR>")
 vim.keymap.set("n", "<leader>se", vim.diagnostic.open_float)
@@ -129,17 +130,17 @@ local servers = {
 		settings = { pyright = { disableOrganizeImports = true }, python = { analysis = { ignore = { "*" } } } },
 	},
 	ruff = {},
-	tsserver = {
+	tsserver = { root_dir = lspconfig.util.root_pattern("tsconfig.json", "jsconfig.json", ".git") },
+	html = {},
+	jsonls = {},
+	cssls = {},
+	tailwindcss = {
 		-- on_attach = function(client, bufnr)
 		on_attach = function(_, bufnr)
 			require("tailwindcss-colors").buf_attach(bufnr)
 		end,
 		filetypes = { "javascript", "javascriptreact", "rescript", "typescript", "typescriptreact" },
 	},
-	html = {},
-	jsonls = {},
-	cssls = {},
-	tailwindcss = {},
 	eslint = {},
 	graphql = {},
 	elixirls = {},
